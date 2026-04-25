@@ -1,0 +1,5 @@
+{
+    "name": "github-ci",
+    "script": "./bin/www",
+    "instances": "1"
+}
