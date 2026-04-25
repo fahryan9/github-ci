@@ -5,12 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest # Proses build image tetap di server cloud GitHub
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -24,16 +23,14 @@ jobs:
           docker build --pull -t ghcr.io/$REPO_LOWER:latest .
           docker push ghcr.io/$REPO_LOWER:latest
 
-      - name: Deploy to Server via SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_IP: "192.168.56.102" 
+  deploy:
+    needs: build-and-push
+    runs-on: self-hosted # Nah! Ini akan memerintahkan agen di Ubuntu Anda untuk bekerja
+    steps:
+      - name: Deploy Container Locally
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_rsa root@$SERVER_IP "docker pull ghcr.io/$REPO_LOWER:latest"
-          ssh -i ~/.ssh/id_rsa root@$SERVER_IP "docker stop github-ci-container || true && docker rm github-ci-container || true"
-          ssh -i ~/.ssh/id_rsa root@$SERVER_IP "docker run -p 3000:3000 -d --name github-ci-container ghcr.io/$REPO_LOWER:latest"
+          sudo docker pull ghcr.io/$REPO_LOWER:latest
+          sudo docker stop github-ci-container || true
+          sudo docker rm github-ci-container || true
+          sudo docker run -p 3000:3000 -d --name github-ci-container ghcr.io/$REPO_LOWER:latest
