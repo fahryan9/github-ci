@@ -27,7 +27,7 @@ jobs:
       - name: Deploy to Server via SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_IP: "192.168.0.130" 
+          SERVER_IP: "192.168.56.102" 
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           mkdir -p ~/.ssh
