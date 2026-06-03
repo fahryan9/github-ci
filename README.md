@@ -7,7 +7,6 @@
 
 Repositori ini berisi aplikasi web **Express.js** sederhana yang dikonfigurasi dengan alur **CI/CD (Continuous Integration / Continuous Deployment)** otomatis menggunakan **GitHub Actions** dan **Self-Hosted Runner**.
 
-Proyek ini dibuat untuk memenuhi tugas **Praktikum Cloud Computing | Universitas Negeri Yogyakarta**.
 
 ---
 
